@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from api.models.user import User
+from api.utils.auth import get_current_user
 from api.schemas.user import GetUser, PostUser, PutUser
 
 user_router = APIRouter(prefix="/api/users", tags=["User"])
@@ -39,3 +40,7 @@ async def get_user(key: int):
     if not exists:
         raise HTTPException(status_code=404, detail="User not found")
     return await GetUser.from_queryset_single(User.get(id=key))
+
+@user_router.get("/me")
+async def get_current_user_endpoint(current_user: User = Depends(get_current_user)):
+    return current_user

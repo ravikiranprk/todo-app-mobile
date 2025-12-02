@@ -39,3 +39,11 @@ async def get_todo(key: int):
     if not exists:
         raise HTTPException(status_code=404, detail="Todo not found")
     return await GetTodo.from_queryset_single(Todo.get(id=key))
+
+@todo_router.put("/todos/{id}/toggle")
+async def toggle(id: int):
+    todo = await Todo.get(id=id)
+    todo.completed = not todo.completed
+    await todo.save()
+    return todo
+
